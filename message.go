@@ -9,7 +9,7 @@ type Message interface {
 	Qos() byte
 	Retained() bool
 	Topic() string
-	MessageID() uint16
+	MessageId() uint16
 	Payload() []byte
 }
 
@@ -18,7 +18,7 @@ type message struct {
 	qos       byte
 	retained  bool
 	topic     string
-	messageID uint16
+	messageId uint16
 	payload   []byte
 }
 
@@ -38,8 +38,8 @@ func (m *message) Topic() string {
 	return m.topic
 }
 
-func (m *message) MessageID() uint16 {
-	return m.messageID
+func (m *message) MessageId() uint16 {
+	return m.messageId
 }
 
 func (m *message) Payload() []byte {
@@ -52,7 +52,7 @@ func messageFromPublish(p *packets.PublishPacket) Message {
 		qos:       p.Qos,
 		retained:  p.Retain,
 		topic:     p.TopicName,
-		messageID: p.MessageId,
+		messageId: p.MessageId,
 		payload:   p.Payload,
 	}
 }

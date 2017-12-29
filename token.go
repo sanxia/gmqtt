@@ -110,13 +110,13 @@ func (c *ConnectToken) ReturnCode() byte {
 //required to provide information about calls to Publish()
 type PublishToken struct {
 	baseToken
-	messageID uint16
+	messageId uint16
 }
 
-//MessageID returns the MQTT message ID that was assigned to the
+//MessageId returns the MQTT message ID that was assigned to the
 //Publish packet when it was sent to the broker
-func (p *PublishToken) MessageID() uint16 {
-	return p.messageID
+func (p *PublishToken) MessageId() uint16 {
+	return p.messageId
 }
 
 //SubscribeToken is an extension of Token containing the extra fields

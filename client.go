@@ -480,7 +480,7 @@ func (c *client) Publish(topic string, qos byte, retained bool, payload interfac
 	utils.DEBUG.Println(utils.CLI, "sending publish message, topic:", topic)
 	if pub.Qos != 0 && pub.MessageId == 0 {
 		pub.MessageId = c.getID(token)
-		token.messageID = pub.MessageId
+		token.messageId = pub.MessageId
 	}
 	stores.PersistOutbound(c.persist, pub)
 	c.obound <- &PacketAndToken{p: pub, t: token}
