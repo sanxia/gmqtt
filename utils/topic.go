@@ -1,4 +1,4 @@
-package gmqtt
+package utils
 
 import (
 	"errors"
@@ -26,11 +26,11 @@ var ErrInvalidTopicMultilevel = errors.New("Invalid Topic; multi-level wildcard 
 // - A TopicFilter with a # will match the absense of a level
 //     Example:  a subscription to "foo/#" will match messages published to "foo".
 
-func validateSubscribeMap(subs map[string]byte) ([]string, []byte, error) {
+func ValidateSubscribeMap(subs map[string]byte) ([]string, []byte, error) {
 	var topics []string
 	var qoss []byte
 	for topic, qos := range subs {
-		if err := validateTopicAndQos(topic, qos); err != nil {
+		if err := ValidateTopicAndQos(topic, qos); err != nil {
 			return nil, nil, err
 		}
 		topics = append(topics, topic)
@@ -40,7 +40,7 @@ func validateSubscribeMap(subs map[string]byte) ([]string, []byte, error) {
 	return topics, qoss, nil
 }
 
-func validateTopicAndQos(topic string, qos byte) error {
+func ValidateTopicAndQos(topic string, qos byte) error {
 	if len(topic) == 0 {
 		return ErrInvalidTopicEmptyString
 	}

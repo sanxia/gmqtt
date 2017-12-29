@@ -498,7 +498,7 @@ func (c *client) Subscribe(topic string, qos byte, callback MessageHandler) Toke
 		return token
 	}
 	sub := packets.NewControlPacket(packets.Subscribe).(*packets.SubscribePacket)
-	if err := validateTopicAndQos(topic, qos); err != nil {
+	if err := utils.ValidateTopicAndQos(topic, qos); err != nil {
 		token.err = err
 		return token
 	}
@@ -528,7 +528,7 @@ func (c *client) SubscribeMultiple(filters map[string]byte, callback MessageHand
 		return token
 	}
 	sub := packets.NewControlPacket(packets.Subscribe).(*packets.SubscribePacket)
-	if sub.Topics, sub.Qoss, err = validateSubscribeMap(filters); err != nil {
+	if sub.Topics, sub.Qoss, err = utils.ValidateSubscribeMap(filters); err != nil {
 		token.err = err
 		return token
 	}
