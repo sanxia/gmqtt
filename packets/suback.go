@@ -10,21 +10,21 @@ import (
 //Suback MQTT packet
 type SubackPacket struct {
 	FixedHeader
-	MessageID   uint16
+	MessageId   uint16
 	ReturnCodes []byte
 }
 
 func (sa *SubackPacket) String() string {
 	str := fmt.Sprintf("%s", sa.FixedHeader)
 	str += " "
-	str += fmt.Sprintf("MessageID: %d", sa.MessageID)
+	str += fmt.Sprintf("MessageId: %d", sa.MessageId)
 	return str
 }
 
 func (sa *SubackPacket) Write(w io.Writer) error {
 	var body bytes.Buffer
 	var err error
-	body.Write(encodeUint16(sa.MessageID))
+	body.Write(encodeUint16(sa.MessageId))
 	body.Write(sa.ReturnCodes)
 	sa.FixedHeader.RemainingLength = body.Len()
 	packet := sa.FixedHeader.pack()
@@ -38,7 +38,7 @@ func (sa *SubackPacket) Write(w io.Writer) error {
 //header has been read
 func (sa *SubackPacket) Unpack(b io.Reader) error {
 	var qosBuffer bytes.Buffer
-	sa.MessageID = decodeUint16(b)
+	sa.MessageId = decodeUint16(b)
 	qosBuffer.ReadFrom(b)
 	sa.ReturnCodes = qosBuffer.Bytes()
 
@@ -46,7 +46,7 @@ func (sa *SubackPacket) Unpack(b io.Reader) error {
 }
 
 //Details returns a Details struct containing the Qos and
-//MessageID of this ControlPacket
+//MessageId of this ControlPacket
 func (sa *SubackPacket) Details() Details {
-	return Details{Qos: 0, MessageID: sa.MessageID}
+	return Details{Qos: 0, MessageId: sa.MessageId}
 }

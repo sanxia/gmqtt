@@ -11,14 +11,14 @@ import (
 type PublishPacket struct {
 	FixedHeader
 	TopicName string
-	MessageID uint16
+	MessageId uint16
 	Payload   []byte
 }
 
 func (p *PublishPacket) String() string {
 	str := fmt.Sprintf("%s", p.FixedHeader)
 	str += " "
-	str += fmt.Sprintf("topicName: %s MessageID: %d", p.TopicName, p.MessageID)
+	str += fmt.Sprintf("topicName: %s MessageId: %d", p.TopicName, p.MessageId)
 	str += " "
 	str += fmt.Sprintf("payload: %s", string(p.Payload))
 	return str
@@ -30,7 +30,7 @@ func (p *PublishPacket) Write(w io.Writer) error {
 
 	body.Write(encodeString(p.TopicName))
 	if p.Qos > 0 {
-		body.Write(encodeUint16(p.MessageID))
+		body.Write(encodeUint16(p.MessageId))
 	}
 	p.FixedHeader.RemainingLength = body.Len() + len(p.Payload)
 	packet := p.FixedHeader.pack()
@@ -47,7 +47,7 @@ func (p *PublishPacket) Unpack(b io.Reader) error {
 	var payloadLength = p.FixedHeader.RemainingLength
 	p.TopicName = decodeString(b)
 	if p.Qos > 0 {
-		p.MessageID = decodeUint16(b)
+		p.MessageId = decodeUint16(b)
 		payloadLength -= len(p.TopicName) + 4
 	} else {
 		payloadLength -= len(p.TopicName) + 2
@@ -74,7 +74,7 @@ func (p *PublishPacket) Copy() *PublishPacket {
 }
 
 //Details returns a Details struct containing the Qos and
-//MessageID of this ControlPacket
+//MessageId of this ControlPacket
 func (p *PublishPacket) Details() Details {
-	return Details{Qos: p.Qos, MessageID: p.MessageID}
+	return Details{Qos: p.Qos, MessageId: p.MessageId}
 }

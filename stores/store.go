@@ -57,14 +57,14 @@ func PersistOutbound(s Store, m packets.ControlPacket) {
 		case *packets.PubackPacket, *packets.PubcompPacket:
 			// Sending puback. delete matching publish
 			// from ibound
-			s.Del(inboundKeyFromMID(m.Details().MessageID))
+			s.Del(inboundKeyFromMID(m.Details().MessageId))
 		}
 	case 1:
 		switch m.(type) {
 		case *packets.PublishPacket, *packets.PubrelPacket, *packets.SubscribePacket, *packets.UnsubscribePacket:
 			// Sending publish. store in obound
 			// until puback received
-			s.Put(outboundKeyFromMID(m.Details().MessageID), m)
+			s.Put(outboundKeyFromMID(m.Details().MessageId), m)
 		default:
 			utils.ERROR.Println(utils.STR, "Asked to persist an invalid message type")
 		}
@@ -73,7 +73,7 @@ func PersistOutbound(s Store, m packets.ControlPacket) {
 		case *packets.PublishPacket:
 			// Sending publish. store in obound
 			// until pubrel received
-			s.Put(outboundKeyFromMID(m.Details().MessageID), m)
+			s.Put(outboundKeyFromMID(m.Details().MessageId), m)
 		default:
 			utils.ERROR.Println(utils.STR, "Asked to persist an invalid message type")
 		}
@@ -88,7 +88,7 @@ func PersistInbound(s Store, m packets.ControlPacket) {
 		case *packets.PubackPacket, *packets.SubackPacket, *packets.UnsubackPacket, *packets.PubcompPacket:
 			// Received a puback. delete matching publish
 			// from obound
-			s.Del(outboundKeyFromMID(m.Details().MessageID))
+			s.Del(outboundKeyFromMID(m.Details().MessageId))
 		case *packets.PublishPacket, *packets.PubrecPacket, *packets.PingrespPacket, *packets.ConnackPacket:
 		default:
 			utils.ERROR.Println(utils.STR, "Asked to persist an invalid messages type")
@@ -98,7 +98,7 @@ func PersistInbound(s Store, m packets.ControlPacket) {
 		case *packets.PublishPacket, *packets.PubrelPacket:
 			// Received a publish. store it in ibound
 			// until puback sent
-			s.Put(inboundKeyFromMID(m.Details().MessageID), m)
+			s.Put(inboundKeyFromMID(m.Details().MessageId), m)
 		default:
 			utils.ERROR.Println(utils.STR, "Asked to persist an invalid messages type")
 		}
@@ -107,7 +107,7 @@ func PersistInbound(s Store, m packets.ControlPacket) {
 		case *packets.PublishPacket:
 			// Received a publish. store it in ibound
 			// until pubrel received
-			s.Put(inboundKeyFromMID(m.Details().MessageID), m)
+			s.Put(inboundKeyFromMID(m.Details().MessageId), m)
 		default:
 			utils.ERROR.Println(utils.STR, "Asked to persist an invalid messages type")
 		}

@@ -9,13 +9,13 @@ import (
 //Puback MQTT packet
 type PubackPacket struct {
 	FixedHeader
-	MessageID uint16
+	MessageId uint16
 }
 
 func (pa *PubackPacket) String() string {
 	str := fmt.Sprintf("%s", pa.FixedHeader)
 	str += " "
-	str += fmt.Sprintf("MessageID: %d", pa.MessageID)
+	str += fmt.Sprintf("MessageId: %d", pa.MessageId)
 	return str
 }
 
@@ -23,7 +23,7 @@ func (pa *PubackPacket) Write(w io.Writer) error {
 	var err error
 	pa.FixedHeader.RemainingLength = 2
 	packet := pa.FixedHeader.pack()
-	packet.Write(encodeUint16(pa.MessageID))
+	packet.Write(encodeUint16(pa.MessageId))
 	_, err = packet.WriteTo(w)
 
 	return err
@@ -32,13 +32,13 @@ func (pa *PubackPacket) Write(w io.Writer) error {
 //Unpack decodes the details of a ControlPacket after the fixed
 //header has been read
 func (pa *PubackPacket) Unpack(b io.Reader) error {
-	pa.MessageID = decodeUint16(b)
+	pa.MessageId = decodeUint16(b)
 
 	return nil
 }
 
 //Details returns a Details struct containing the Qos and
-//MessageID of this ControlPacket
+//MessageId of this ControlPacket
 func (pa *PubackPacket) Details() Details {
-	return Details{Qos: pa.Qos, MessageID: pa.MessageID}
+	return Details{Qos: pa.Qos, MessageId: pa.MessageId}
 }

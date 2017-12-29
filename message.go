@@ -52,7 +52,7 @@ func messageFromPublish(p *packets.PublishPacket) Message {
 		qos:       p.Qos,
 		retained:  p.Retain,
 		topic:     p.TopicName,
-		messageID: p.MessageID,
+		messageID: p.MessageId,
 		payload:   p.Payload,
 	}
 }

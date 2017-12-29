@@ -45,7 +45,7 @@ func (ca *ConnackPacket) Unpack(b io.Reader) error {
 }
 
 //Details returns a Details struct containing the Qos and
-//MessageID of this ControlPacket
+//MessageId of this ControlPacket
 func (ca *ConnackPacket) Details() Details {
-	return Details{Qos: 0, MessageID: 0}
+	return Details{Qos: 0, MessageId: 0}
 }

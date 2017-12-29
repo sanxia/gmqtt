@@ -177,13 +177,13 @@ func outgoing(c *client) {
 			if msg.Qos == 0 {
 				pub.t.flowComplete()
 			}
-			utils.DEBUG.Println(utils.NET, "obound wrote msg, id:", msg.MessageID)
+			utils.DEBUG.Println(utils.NET, "obound wrote msg, id:", msg.MessageId)
 		case msg := <-c.oboundP:
 			switch msg.p.(type) {
 			case *packets.SubscribePacket:
-				msg.p.(*packets.SubscribePacket).MessageID = c.getID(msg.t)
+				msg.p.(*packets.SubscribePacket).MessageId = c.getID(msg.t)
 			case *packets.UnsubscribePacket:
-				msg.p.(*packets.UnsubscribePacket).MessageID = c.getID(msg.t)
+				msg.p.(*packets.UnsubscribePacket).MessageId = c.getID(msg.t)
 			}
 			utils.DEBUG.Println(utils.NET, "obound priority msg to write, type", reflect.TypeOf(msg.p))
 			if err := msg.p.Write(c.conn); err != nil {
@@ -225,8 +225,8 @@ func alllogic(c *client) {
 				utils.DEBUG.Println(utils.NET, "received pingresp")
 				atomic.StoreInt32(&c.pingOutstanding, 0)
 			case *packets.SubackPacket:
-				utils.DEBUG.Println(utils.NET, "received suback, id:", m.MessageID)
-				token := c.getToken(m.MessageID)
+				utils.DEBUG.Println(utils.NET, "received suback, id:", m.MessageId)
+				token := c.getToken(m.MessageId)
 				switch t := token.(type) {
 				case *SubscribeToken:
 					utils.DEBUG.Println(utils.NET, "granted qoss", m.ReturnCodes)
@@ -235,20 +235,20 @@ func alllogic(c *client) {
 					}
 				}
 				token.flowComplete()
-				c.freeID(m.MessageID)
+				c.freeID(m.MessageId)
 			case *packets.UnsubackPacket:
-				utils.DEBUG.Println(utils.NET, "received unsuback, id:", m.MessageID)
-				c.getToken(m.MessageID).flowComplete()
-				c.freeID(m.MessageID)
+				utils.DEBUG.Println(utils.NET, "received unsuback, id:", m.MessageId)
+				c.getToken(m.MessageId).flowComplete()
+				c.freeID(m.MessageId)
 			case *packets.PublishPacket:
-				utils.DEBUG.Println(utils.NET, "received publish, msgId:", m.MessageID)
+				utils.DEBUG.Println(utils.NET, "received publish, msgId:", m.MessageId)
 				utils.DEBUG.Println(utils.NET, "putting msg on onPubChan")
 				switch m.Qos {
 				case 2:
 					c.incomingPubChan <- m
 					utils.DEBUG.Println(utils.NET, "done putting msg on incomingPubChan")
 					pr := packets.NewControlPacket(packets.Pubrec).(*packets.PubrecPacket)
-					pr.MessageID = m.MessageID
+					pr.MessageId = m.MessageId
 					utils.DEBUG.Println(utils.NET, "putting pubrec msg on obound")
 					select {
 					case c.oboundP <- &PacketAndToken{p: pr, t: nil}:
@@ -259,7 +259,7 @@ func alllogic(c *client) {
 					c.incomingPubChan <- m
 					utils.DEBUG.Println(utils.NET, "done putting msg on incomingPubChan")
 					pa := packets.NewControlPacket(packets.Puback).(*packets.PubackPacket)
-					pa.MessageID = m.MessageID
+					pa.MessageId = m.MessageId
 					utils.DEBUG.Println(utils.NET, "putting puback msg on obound")
 					stores.PersistOutbound(c.persist, pa)
 					select {
@@ -275,32 +275,32 @@ func alllogic(c *client) {
 					utils.DEBUG.Println(utils.NET, "done putting msg on incomingPubChan")
 				}
 			case *packets.PubackPacket:
-				utils.DEBUG.Println(utils.NET, "received puback, id:", m.MessageID)
+				utils.DEBUG.Println(utils.NET, "received puback, id:", m.MessageId)
 				// c.receipts.get(msg.MsgId()) <- Receipt{}
 				// c.receipts.end(msg.MsgId())
-				c.getToken(m.MessageID).flowComplete()
-				c.freeID(m.MessageID)
+				c.getToken(m.MessageId).flowComplete()
+				c.freeID(m.MessageId)
 			case *packets.PubrecPacket:
-				utils.DEBUG.Println(utils.NET, "received pubrec, id:", m.MessageID)
+				utils.DEBUG.Println(utils.NET, "received pubrec, id:", m.MessageId)
 				prel := packets.NewControlPacket(packets.Pubrel).(*packets.PubrelPacket)
-				prel.MessageID = m.MessageID
+				prel.MessageId = m.MessageId
 				select {
 				case c.oboundP <- &PacketAndToken{p: prel, t: nil}:
 				case <-c.stop:
 				}
 			case *packets.PubrelPacket:
-				utils.DEBUG.Println(utils.NET, "received pubrel, id:", m.MessageID)
+				utils.DEBUG.Println(utils.NET, "received pubrel, id:", m.MessageId)
 				pc := packets.NewControlPacket(packets.Pubcomp).(*packets.PubcompPacket)
-				pc.MessageID = m.MessageID
+				pc.MessageId = m.MessageId
 				stores.PersistOutbound(c.persist, pc)
 				select {
 				case c.oboundP <- &PacketAndToken{p: pc, t: nil}:
 				case <-c.stop:
 				}
 			case *packets.PubcompPacket:
-				utils.DEBUG.Println(utils.NET, "received pubcomp, id:", m.MessageID)
-				c.getToken(m.MessageID).flowComplete()
-				c.freeID(m.MessageID)
+				utils.DEBUG.Println(utils.NET, "received pubcomp, id:", m.MessageId)
+				c.getToken(m.MessageId).flowComplete()
+				c.freeID(m.MessageId)
 			}
 		case <-c.stop:
 			utils.WARN.Println(utils.NET, "logic stopped")

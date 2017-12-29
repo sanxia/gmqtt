@@ -10,7 +10,7 @@ import (
 //Subscribe MQTT packet
 type SubscribePacket struct {
 	FixedHeader
-	MessageID uint16
+	MessageId uint16
 	Topics    []string
 	Qoss      []byte
 }
@@ -18,7 +18,7 @@ type SubscribePacket struct {
 func (s *SubscribePacket) String() string {
 	str := fmt.Sprintf("%s", s.FixedHeader)
 	str += " "
-	str += fmt.Sprintf("MessageID: %d topics: %s", s.MessageID, s.Topics)
+	str += fmt.Sprintf("MessageId: %d topics: %s", s.MessageId, s.Topics)
 	return str
 }
 
@@ -26,7 +26,7 @@ func (s *SubscribePacket) Write(w io.Writer) error {
 	var body bytes.Buffer
 	var err error
 
-	body.Write(encodeUint16(s.MessageID))
+	body.Write(encodeUint16(s.MessageId))
 	for i, topic := range s.Topics {
 		body.Write(encodeString(topic))
 		body.WriteByte(s.Qoss[i])
@@ -42,7 +42,7 @@ func (s *SubscribePacket) Write(w io.Writer) error {
 //Unpack decodes the details of a ControlPacket after the fixed
 //header has been read
 func (s *SubscribePacket) Unpack(b io.Reader) error {
-	s.MessageID = decodeUint16(b)
+	s.MessageId = decodeUint16(b)
 	payloadLength := s.FixedHeader.RemainingLength - 2
 	for payloadLength > 0 {
 		topic := decodeString(b)
@@ -56,7 +56,7 @@ func (s *SubscribePacket) Unpack(b io.Reader) error {
 }
 
 //Details returns a Details struct containing the Qos and
-//MessageID of this ControlPacket
+//MessageId of this ControlPacket
 func (s *SubscribePacket) Details() Details {
-	return Details{Qos: 1, MessageID: s.MessageID}
+	return Details{Qos: 1, MessageId: s.MessageId}
 }
